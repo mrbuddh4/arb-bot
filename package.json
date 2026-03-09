@@ -1,0 +1,33 @@
+{
+  "name": "paxeer-arb-bot",
+  "version": "1.0.0",
+  "description": "Arbitrage Telegram bot for Paxeer Network / Sidiora Exchange",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "arbitrage",
+    "trading",
+    "telegram",
+    "paxeer",
+    "sidiora"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "cross-fetch": "^4.0.0",
+    "decimal.js": "^10.4.3",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.8.0",
+    "pg": "^8.20.0",
+    "telegraf": "^4.12.2",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
