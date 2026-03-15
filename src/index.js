@@ -2,14 +2,14 @@ const logger = require('./logger');
 const config = require('./config');
 const telegram = require('./modules/telegram');
 const database = require('./modules/database');
-const PriceFetcher = require('./modules/priceFetcher');
+const priceFetcher = require('./modules/priceFetcher');
 const ArbitrageDetector = require('./modules/arbitrage');
 const Trader = require('./modules/trader');
 const portfolio = require('./modules/portfolio');
 
 class ArbitrageBot {
   constructor() {
-    this.priceFetcher = new PriceFetcher();
+    this.priceFetcher = priceFetcher;
     this.arbitrageDetector = new ArbitrageDetector(this.priceFetcher);
     this.trader = new Trader();
     this.isRunning = false;
