@@ -13,13 +13,15 @@ class PriceFetcher {
   async fetchSidioraPrice() {
     try {
       // Fetch from Sidiora Exchange API
-      const response = await axios.get(`${config.sidiora.apiUrl}/v1/prices`, {
+      const url = `${config.sidiora.apiUrl}/v1/prices`;
+      const response = await axios.get(url, {
         params: {
           pair: config.trading.tradingPair,
         },
         headers: {
           'X-API-Key': config.sidiora.apiKey,
         },
+        timeout: 5000,
       });
 
       const priceData = response.data[0];
@@ -45,26 +47,25 @@ class PriceFetcher {
         liquidity,
       });
 
-      logger.debug(`Sidiora price: $${price}`);
+      logger.debug(`✅ Sidiora price: $${price}`);
       return { price, liquidity };
     } catch (error) {
-      logger.error(`Failed to fetch Sidiora price: ${error.message}`);
+      logger.error(`❌ Failed to fetch Sidiora price from ${config.sidiora.apiUrl}: ${error.message}`);
       return null;
     }
   }
 
   async fetchAMMPrice() {
     try {
-      // Fetch from DEX/AMM using Paxeer portfolio API or subgraph
-      // This would typically use a DEX subgraph like The Graph for Uniswap/Sushi equivalent
+      // Fetch from DEX/AMM using Paxeer RPC
+      const rpcUrl = config.paxeer.rpcUrl;
       
-      // Example: Using a generic DEX subgraph or RPC call
-      const response = await axios.post(config.paxeer.rpcUrl, {
+      const response = await axios.post(rpcUrl, {
         jsonrpc: '2.0',
         method: 'eth_call',
         params: [
           {
-            to: process.env.UNISWAP_ROUTER_ADDRESS || '0x0000000000000000000000000000000000000000',
+            to: process.env.SIDIORA_ROUTER_ADDRESS || '0x0000000000000000000000000000000000000000',
             data: this.encodeGetAmountsOut(
               new Decimal(1).times(new Decimal(10).pow(18)).toString(),
               [process.env.SID_TOKEN_ADDRESS, process.env.USDC_TOKEN_ADDRESS]
@@ -73,6 +74,8 @@ class PriceFetcher {
           'latest',
         ],
         id: 1,
+      }, {
+        timeout: 5000,
       });
 
       // Decode response to get price
@@ -91,10 +94,10 @@ class PriceFetcher {
         price: ammPrice,
       });
 
-      logger.debug(`AMM price: $${ammPrice}`);
+      logger.debug(`✅ AMM price: $${ammPrice}`);
       return { price: ammPrice, liquidity: this.prices.amm.liquidity };
     } catch (error) {
-      logger.error(`Failed to fetch AMM price: ${error.message}`);
+      logger.error(`❌ Failed to fetch AMM price from RPC ${config.paxeer.rpcUrl}: ${error.message}`);
       return null;
     }
   }

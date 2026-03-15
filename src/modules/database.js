@@ -20,10 +20,11 @@ class DatabaseManager {
       const client = await this.pool.connect();
       client.release();
       this.connected = true;
-      logger.info('PostgreSQL database connected');
+      logger.info('✅ PostgreSQL database connected');
       await this.initializeSchema();
     } catch (error) {
-      logger.error(`Failed to connect to PostgreSQL: ${error.message}`);
+      logger.error(`❌ Failed to connect to PostgreSQL: ${error.message || JSON.stringify(error)}`);
+      logger.error(`Connection config: host=${config.database.host}, port=${config.database.port}, db=${config.database.database}`);
       this.connected = false;
       // Retry connection after 5 seconds
       setTimeout(() => this.initializeConnection(), 5000);
