@@ -57,34 +57,54 @@ class PriceFetcher {
 
   async fetchAMMPrice() {
     try {
-      // Fetch from DEX/AMM using Paxeer RPC
-      const rpcUrl = config.paxeer.rpcUrl;
+      // Fetch from DEX/AMM using GraphQL (DEX uses GraphQL, NOT JSON-RPC!)
+      const graphqlEndpoint = process.env.GRAPHQL_ENDPOINT;
       
-      const response = await axios.post(rpcUrl, {
-        jsonrpc: '2.0',
-        method: 'eth_call',
-        params: [
-          {
-            to: process.env.SIDIORA_ROUTER_ADDRESS || '0x0000000000000000000000000000000000000000',
-            data: this.encodeGetAmountsOut(
-              new Decimal(1).times(new Decimal(10).pow(18)).toString(),
-              [process.env.SID_TOKEN_ADDRESS, process.env.USDC_TOKEN_ADDRESS]
-            ),
-          },
-          'latest',
-        ],
-        id: 1,
+      if (!graphqlEndpoint) {
+        throw new Error('GRAPHQL_ENDPOINT environment variable not set. Contact DevOps for DEX GraphQL endpoint.');
+      }
+
+      // GraphQL query for getting token pair prices
+      // Structure depends on your specific DEX (could be subgraph-based or custom)
+      const query = `
+        query {
+          pairs(first: 1, where: { token0: "${process.env.USDC_TOKEN_ADDRESS}", token1: "${process.env.SID_TOKEN_ADDRESS}" }) {
+            id
+            reserve0
+            reserve1
+            token0Price
+            token1Price
+          }
+        }
+      `;
+
+      const response = await axios.post(graphqlEndpoint, {
+        query,
       }, {
         timeout: 5000,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
-      // Decode response to get price
-      // For now, return a placeholder - in production, decode the ABI output
-      const ammPrice = Math.random() * 12; // Placeholder
+      if (response.data.errors) {
+        throw new Error(`GraphQL error: ${response.data.errors.map(e => e.message).join(', ')}`);
+      }
+
+      const pairData = response.data?.data?.pairs?.[0];
+      
+      if (!pairData) {
+        logger.warn('No pair data from DEX GraphQL');
+        return null;
+      }
+
+      // Get the price (token1Price is SID/USDC rate)
+      const ammPrice = parseFloat(pairData.token1Price || (pairData.reserve0 / pairData.reserve1));
+      const liquidity = parseFloat(pairData.reserve0); // USDC liquidity
 
       this.prices.amm = {
         price: ammPrice,
-        liquidity: Math.random() * 100000,
+        liquidity,
         timestamp: Date.now(),
       };
 
@@ -92,20 +112,21 @@ class PriceFetcher {
         tradingPair: config.trading.tradingPair,
         venue: 'AMM/DEX',
         price: ammPrice,
+        liquidity,
       });
 
-      logger.debug(`✅ AMM price: $${ammPrice}`);
-      return { price: ammPrice, liquidity: this.prices.amm.liquidity };
+      logger.debug(`✅ AMM price from GraphQL: $${ammPrice}`);
+      return { price: ammPrice, liquidity };
     } catch (error) {
-      logger.error(`❌ Failed to fetch AMM price from RPC ${config.paxeer.rpcUrl}: ${error.message}`);
+      logger.error(`❌ Failed to fetch AMM price from GraphQL: ${error.message}`);
       return null;
     }
   }
 
   encodeGetAmountsOut(amountIn, path) {
-    // Helper to encode getAmountsOut function call
-    // This is a simplified version - in production, use ethers.js or web3.js
-    return '0x'; // Placeholder
+    // This method is no longer used (DEX uses GraphQL, not RPC)
+    // Kept for reference only
+    return '0x';
   }
 
   async fetchAllPrices() {

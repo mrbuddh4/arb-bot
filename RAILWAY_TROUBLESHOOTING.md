@@ -77,31 +77,51 @@ Based on your logs:
 
 ---
 
-## Issue #3: Paxeer RPC Unreachable
+## Issue #3: Paxeer RPC Unreachable ❌ NOT NEEDED
 
-**Problem**: `rpc.paxeer.network` is not resolving (DNS not found).
+**UPDATE**: The DEX uses **GraphQL**, not JSON-RPC for price fetching!
 
-**Solutions**:
+**New Issue**: Missing GRAPHQL_ENDPOINT environment variable
 
-1. **Verify the RPC URL is correct**:
-   - Is it `https://rpc.paxeer.network`?
-   - Check Paxeer documentation for correct RPC endpoint
-   - Try from command line:
-   ```bash
-   curl -X POST https://rpc.paxeer.network \
-     -H "Content-Type: application/json" \
-     -d '{"jsonrpc":"2.0","method":"eth_chainId","params":[],"id":1}'
+**Solution**:
+
+1. **Get the correct GraphQL endpoint**:
+   - Ask the CEO or check browser DevTools (F12) Network tab
+   - The endpoint might be `https://api.sidiora.exchange/graphql` or similar
+   - Store it in Railway environment as `GRAPHQL_ENDPOINT`
+
+2. **Set GRAPHQL_ENDPOINT in Railway**:
+   ```
+   GRAPHQL_ENDPOINT=https://api.sidiora.exchange/graphql
+   ```
+   (or whatever the actual endpoint is)
+
+3. **GraphQL Query Format**:
+   - The bot queries for SID/USDC pair data
+   - Needs `token0Price` or `reserve0`/`reserve1` to calculate price
+   - Query structure:
+   ```graphql
+   query {
+     pairs(first: 1, where: { token0: "USDC_ADDRESS", token1: "SID_ADDRESS" }) {
+       token0Price
+       token1Price
+       reserve0
+       reserve1
+     }
+   }
    ```
 
-2. **If URL is correct**:
-   - Might need to add auth headers or API key
-   - Update priceFetcher.js if needed
+---
 
-3. **If URL is different**:
-   - Update Railway environment variable:
-   ```
-   PAXEER_RPC_URL=https://correct-rpc-url.com
-   ```
+## Updated Endpoint Summary
+
+| Service | Type | Endpoint | Status |
+|---------|------|----------|--------|
+| Sidiora API | REST | https://api.sidiora.exchange | ✅ Confirmed |
+| DEX Prices | **GraphQL** | `GRAPHQL_ENDPOINT` env var | ❌ **Needs to be set** |
+| PostgreSQL | Native | ${{Postgres.*}} vars | ❌ Not connected |
+
+
 
 ---
 
