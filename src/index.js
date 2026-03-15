@@ -32,6 +32,20 @@ class ArbitrageBot {
         throw new Error('PAXEER_PRIVATE_KEY is required');
       }
 
+      // Warn if database not configured
+      if (!config.database.host || !config.database.user || !config.database.password) {
+        logger.warn('⚠️  PostgreSQL not fully configured:');
+        logger.warn(`   host=${config.database.host}, user=${config.database.user}, db=${config.database.database}`);
+        logger.warn('   Trades will be logged to file only, not database');
+      }
+
+      // Warn if APIs not configured  
+      if (!config.sidiora.apiUrl || !config.paxeer.rpcUrl) {
+        logger.warn('⚠️  API endpoints not configured:');
+        logger.warn(`   Sidiora: ${config.sidiora.apiUrl}`);
+        logger.warn(`   Paxeer RPC: ${config.paxeer.rpcUrl}`);
+      }
+
       // Start Telegram bot
       telegram.launch();
       logger.info('✅ Telegram bot started');

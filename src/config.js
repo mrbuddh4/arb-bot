@@ -20,12 +20,12 @@ module.exports = {
 
   // PostgreSQL Configuration
   database: {
-    host: process.env.DATABASE_HOST || 'localhost',
-    port: parseInt(process.env.DATABASE_PORT) || 5432,
-    database: process.env.DATABASE_NAME || 'arb_bot',
-    user: process.env.DATABASE_USER || 'postgres',
+    host: process.env.DATABASE_HOST,
+    port: process.env.DATABASE_PORT ? parseInt(process.env.DATABASE_PORT) : undefined,
+    database: process.env.DATABASE_NAME,
+    user: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
-    ssl: process.env.DATABASE_SSL === 'true',
+    ssl: process.env.DATABASE_SSL === 'true' || process.env.NODE_ENV === 'production',
   },
 
   // Trading Configuration
