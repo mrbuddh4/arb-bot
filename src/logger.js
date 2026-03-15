@@ -1,6 +1,13 @@
 const winston = require('winston');
 const path = require('path');
+const fs = require('fs');
 const config = require('./config');
+
+// Ensure logs directory exists
+const logsDir = path.join(__dirname, '../logs');
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir, { recursive: true });
+}
 
 const logger = winston.createLogger({
   level: config.logging.level,
@@ -13,23 +20,20 @@ const logger = winston.createLogger({
   ),
   defaultMeta: { service: 'arb-bot' },
   transports: [
+    // Always log errors
     new winston.transports.File({
-      filename: path.join(__dirname, '../logs/error.log'),
+      filename: path.join(logsDir, 'error.log'),
       level: 'error',
       maxsize: 5242880, // 5MB
       maxFiles: 5,
     }),
+    // Always log all levels
     new winston.transports.File({
-      filename: path.join(__dirname, '../logs/app.log'),
+      filename: path.join(logsDir, 'app.log'),
       maxsize: 5242880,
       maxFiles: 5,
     }),
-  ],
-});
-
-// Add console logging in development
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(
+    // Always log to console (especially important for Railway/Docker)
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),
@@ -37,8 +41,8 @@ if (process.env.NODE_ENV !== 'production') {
           return `[${timestamp}] ${level}: ${message}`;
         })
       ),
-    })
-  );
-}
+    }),
+  ],
+});
 
 module.exports = logger;
