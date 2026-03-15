@@ -83,13 +83,13 @@ Add these to your `.env` file (copies provided in `.env.example`):
 # Token addresses on Paxeer Network
 SID_TOKEN_ADDRESS=0x...
 USDC_TOKEN_ADDRESS=0x...
-UNISWAP_ROUTER_ADDRESS=0x...  # DEX router (Uniswap V2 compatible)
+SIDIORA_ROUTER_ADDRESS=0x...  # Sidiora DEX router (Uniswap V2 compatible)
 ```
 
 **How to get these:**
 
 1. **Token Addresses**: Find on Paxeer Network explorer or search official docs
-2. **Router Address**: Check the DEX/AMM protocol (Uniswap, SushiSwap, etc.) on Paxeer
+2. **Router Address**: Use Sidiora's DEX router address on Paxeer Network
 
 ---
 
@@ -188,7 +188,7 @@ Before running with real trades, ensure:
 - [ ] `AUTO_EXECUTE_TRADES=true` in `.env`
 - [ ] `SID_TOKEN_ADDRESS` is set correctly
 - [ ] `USDC_TOKEN_ADDRESS` is set correctly
-- [ ] `UNISWAP_ROUTER_ADDRESS` is set correctly
+- [ ] `SIDIORA_ROUTER_ADDRESS` is set correctly
 - [ ] `PAXEER_PRIVATE_KEY` is a real private key with balance
 - [ ] Bot wallet has sufficient USDC to buy SID on AMM
 - [ ] bot wallet has sufficient SID if needed
@@ -225,7 +225,7 @@ SELECT * FROM trades ORDER BY created_at DESC LIMIT 5;
 
 ### "Missing token/router addresses in environment"
 
-**Fix**: Add `SID_TOKEN_ADDRESS`, `USDC_TOKEN_ADDRESS`, and `UNISWAP_ROUTER_ADDRESS` to `.env`
+**Fix**: Add `SID_TOKEN_ADDRESS`, `USDC_TOKEN_ADDRESS`, and `SIDIORA_ROUTER_ADDRESS` to `.env`
 
 ### "Execution reverted: Insufficient balance"
 

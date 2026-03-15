@@ -31,7 +31,7 @@ class Trader {
     // Load token and router addresses from environment
     this.sidTokenAddress = process.env.SID_TOKEN_ADDRESS;
     this.usdcTokenAddress = process.env.USDC_TOKEN_ADDRESS;
-    this.routerAddress = process.env.UNISWAP_ROUTER_ADDRESS;
+    this.routerAddress = process.env.SIDIORA_ROUTER_ADDRESS;
 
     // Validate addresses
     if (!this.sidTokenAddress || !this.usdcTokenAddress || !this.routerAddress) {
@@ -54,7 +54,7 @@ class Trader {
 
       // Validate required addresses
       if (!this.sidTokenAddress || !this.usdcTokenAddress || !this.routerAddress) {
-        throw new Error('Missing token/router addresses. Set SID_TOKEN_ADDRESS, USDC_TOKEN_ADDRESS, UNISWAP_ROUTER_ADDRESS in .env');
+        throw new Error('Missing token/router addresses. Set SID_TOKEN_ADDRESS, USDC_TOKEN_ADDRESS, SIDIORA_ROUTER_ADDRESS in .env');
       }
 
       let buyTxHash;
