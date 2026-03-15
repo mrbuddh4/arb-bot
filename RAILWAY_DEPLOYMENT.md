@@ -38,9 +38,16 @@ TELEGRAM_CHAT_ID=your_telegram_chat_id
 # Sidiora Exchange API
 SIDIORA_API_KEY=your_api_key
 SIDIORA_API_SECRET=your_api_secret
+SIDIORA_API_URL=https://api.sidiora.exchange
 
 # Paxeer Network
+PAXEER_RPC_URL=https://rpc.paxeer.network
 PAXEER_PRIVATE_KEY=your_private_key
+
+# Token Addresses (Paxeer Network)
+SID_TOKEN_ADDRESS=0x...
+USDC_TOKEN_ADDRESS=0x...
+SIDIORA_ROUTER_ADDRESS=0x...
 
 # Database (PostgreSQL on Railway)
 DATABASE_HOST=${{Postgres.PGHOST}}
@@ -48,21 +55,20 @@ DATABASE_PORT=${{Postgres.PGPORT}}
 DATABASE_NAME=${{Postgres.PGDATABASE}}
 DATABASE_USER=${{Postgres.PGUSER}}
 DATABASE_PASSWORD=${{Postgres.PGPASSWORD}}
-DATABASE_SSL=true
 
-# Bot Configuration
-MIN_PROFIT_PERCENTAGE=1
-CHECK_INTERVAL=5000
+# Trading Configuration
+PROFIT_THRESHOLD_PERCENT=1
+CHECK_INTERVAL_MS=5000
 AUTO_EXECUTE_TRADES=true
+TRADING_PAIR=SID/USDC
 MAX_TRADE_SIZE_USD=1000
-
-# Node
-NODE_ENV=production
+LOG_LEVEL=info
+DATABASE_SSL=true
 ```
 
 ### Step 3: Add PostgreSQL Database
 
-1. In Railway dashboard, click **"Add plug-in"**
+1. In Railway dashboard, click **"Add Service"**
 2. Search for **PostgreSQL** and select it
 3. Railway automatically creates the database
 4. Uses the variables above: `${{Postgres.PGHOST}}`, etc.
@@ -87,15 +93,24 @@ This is automatically connected to your app's environment variables!
 ### Sidiora Exchange
 - `SIDIORA_API_KEY` - From Sidiora dashboard
 - `SIDIORA_API_SECRET` - From Sidiora dashboard
+- `SIDIORA_API_URL` - Exchange API endpoint (default: https://api.sidiora.exchange)
 
 ### Paxeer Network
-- `PAXEER_PRIVATE_KEY` - Private key for Paxeer account (hex format)
+- `PAXEER_RPC_URL` - RPC endpoint (default: https://rpc.paxeer.network)
+- `PAXEER_PRIVATE_KEY` - Private key for Paxeer account (hex format, 0x...)
+
+### Token Addresses (Paxeer Network) - **REQUIRED FOR REAL TRADES**
+- `SID_TOKEN_ADDRESS` - SID token contract address (0x...)
+- `USDC_TOKEN_ADDRESS` - USDC token contract address (0x...)
+- `SIDIORA_ROUTER_ADDRESS` - Sidiora DEX router address (0x...)
 
 ### Trading Parameters
-- `MIN_PROFIT_PERCENTAGE` - Minimum profit % to trigger trade (default: 1)
-- `CHECK_INTERVAL` - Price check frequency in ms (default: 5000)
-- `AUTO_EXECUTE_TRADES` - Auto-execute or send alerts only (default: true)
+- `PROFIT_THRESHOLD_PERCENT` - Minimum profit % to trigger trade (default: 1)
+- `CHECK_INTERVAL_MS` - Price check frequency in ms (default: 5000)
+- `AUTO_EXECUTE_TRADES` - Auto-execute trades (default: true)
 - `MAX_TRADE_SIZE_USD` - Maximum trade size in USD (default: 1000)
+- `TRADING_PAIR` - Trading pair (default: SID/USDC)
+- `LOG_LEVEL` - Logging level (default: info)
 
 ---
 
